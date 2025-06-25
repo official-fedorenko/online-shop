@@ -1,15 +1,67 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 const bcrypt = require("bcryptjs");
+const fs = require("fs");
 
-const dbPath = path.join(__dirname, "../db/shop.db");
+// Определяем путь к базе данных в зависимости от среды
+let dbPath;
+if (process.env.NODE_ENV === "production") {
+  // В продакшене пробуем разные варианты
+  const possiblePaths = ["/tmp", process.cwd(), __dirname];
+  let tmpDir = null;
+
+  for (const testPath of possiblePaths) {
+    try {
+      if (fs.existsSync(testPath)) {
+        // Проверяем права на запись
+        const testFile = path.join(testPath, "test-write.tmp");
+        fs.writeFileSync(testFile, "test");
+        fs.unlinkSync(testFile);
+        tmpDir = testPath;
+        break;
+      }
+    } catch (e) {
+      continue;
+    }
+  }
+
+  if (!tmpDir) {
+    console.error("❌ Не удалось найти папку для базы данных");
+    process.exit(1);
+  }
+
+  dbPath = path.join(tmpDir, "shop.db");
+  console.log("🚀 Продакшен режим: используем", tmpDir, "для базы данных");
+} else {
+  // В разработке используем локальную папку db
+  const dbDir = path.join(__dirname, "../db");
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+  dbPath = path.join(dbDir, "shop.db");
+  console.log("🔧 Режим разработки: используем локальную папку db");
+}
 
 // Создаём соединение с базой данных
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error("Ошибка подключения к базе данных:", err.message);
+    console.error("❌ Ошибка подключения к базе данных:", err.message);
+    console.error("📂 Путь к базе:", dbPath);
+    process.exit(1);
   } else {
     console.log("✅ Подключение к SQLite базе данных установлено");
+    console.log("📂 Файл базы данных:", dbPath);
+    console.log("🔧 Среда:", process.env.NODE_ENV || "development");
+  }
+});
+
+// Проверяем, что база данных работает
+db.get("SELECT 1", (err) => {
+  if (err) {
+    console.error("❌ База данных не отвечает:", err.message);
+    process.exit(1);
+  } else {
+    console.log("✅ База данных готова к работе");
   }
 });
 

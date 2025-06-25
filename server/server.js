@@ -3,6 +3,10 @@ const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
 
+console.log("🚀 Запуск сервера интернет-магазина...");
+console.log("🔧 NODE_ENV:", process.env.NODE_ENV || "development");
+console.log("🌐 PORT:", process.env.PORT || 3000);
+
 const authRoutes = require("./routes/auth");
 const productsRoutes = require("./routes/products");
 const usersRoutes = require("./routes/users");

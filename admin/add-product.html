@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить продукт</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="../js/admin.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Добавить новый продукт</h1>
+        <nav>
+            <a href="index.html">Назад к админке</a>
+        </nav>
+    </header>
+    <main>
+        <form id="add-product-form">
+            <label for="product-name">Название продукта:</label>
+            <input type="text" id="product-name" required>
+
+            <label for="product-price">Цена продукта:</label>
+            <input type="number" id="product-price" required>
+
+            <label for="product-description">Описание продукта:</label>
+            <textarea id="product-description" required></textarea>
+
+            <label for="product-image">URL изображения:</label>
+            <input type="url" id="product-image" required>
+
+            <button type="submit">Добавить продукт</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2023 Интернет-магазин</p>
+    </footer>
+</body>
+</html>

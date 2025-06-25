@@ -3,6 +3,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Online shop initialized");
   initializeUserInterface();
+
+  // Загружаем товары если мы на главной странице
+  if (
+    typeof fetchProducts === "function" &&
+    document.getElementById("product-list")
+  ) {
+    fetchProducts();
+  }
 });
 
 // Инициализация пользовательского интерфейса

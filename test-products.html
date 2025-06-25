@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тест товаров с заглушкой</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="nav-container">
+          <a href="/" class="nav-logo">
+            <i class="fas fa-store"></i> Интернет Магазин (Тест)
+          </a>
+          <ul class="nav-menu">
+            <li><a href="/" class="active">Главная</a></li>
+            <li><a href="/cart">Корзина</a></li>
+            <li class="auth-links">
+              <a href="/my-orders" id="ordersLink" style="display: none"
+                >Мои заказы</a
+              >
+              <a href="/auth" id="authLink">Войти</a>
+              <span id="userInfo" style="display: none">
+                <span id="userName"></span>
+                <a href="/admin" id="adminLink" style="display: none"
+                  >Админка</a
+                >
+                <a href="#" onclick="logout()">Выйти</a>
+              </span>
+            </li>
+          </ul>
+          <div class="cart-icon">
+            <a href="/cart"> 🛒 <span class="cart-count">0</span> </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div style="padding: 20px; text-align: center">
+        <h1>Тест отображения товаров</h1>
+        <button onclick="loadTestProducts()" class="btn btn-primary">
+          Загрузить тестовые товары
+        </button>
+        <button onclick="clearProducts()" class="btn btn-secondary">
+          Очистить
+        </button>
+        <button onclick="testAuth()" class="btn btn-success">
+          Тест авторизации
+        </button>
+      </div>
+
+      <section id="product-list">
+        <div class="no-products">
+          <i class="fas fa-box-open"></i>
+          <h3>Нажмите "Загрузить тестовые товары"</h3>
+          <p>Для проверки отображения товаров</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/navigation.js"></script>
+    <script>
+      // Тестовые данные товаров
+      const testProducts = [
+        {
+          id: 1,
+          name: "iPhone 15 Pro",
+          description: "Новейший смартфон Apple с титановым корпусом",
+          price: 899.99,
+          image_url: "https://via.placeholder.com/300x300?text=iPhone+15+Pro",
+          category: "Смартфоны",
+          in_stock: true,
+        },
+        {
+          id: 2,
+          name: "MacBook Air M2",
+          description: "Ультрабук Apple на чипе M2",
+          price: 1299.99,
+          image_url: "https://via.placeholder.com/300x300?text=MacBook+Air",
+          category: "Ноутбуки",
+          in_stock: true,
+        },
+        {
+          id: 3,
+          name: "Samsung Galaxy S24",
+          description: "Флагманский Android смартфон",
+          price: 799.99,
+          image_url: "https://via.placeholder.com/300x300?text=Galaxy+S24",
+          category: "Смартфоны",
+          in_stock: true,
+        },
+        {
+          id: 4,
+          name: "Xiaomi Redmi Note 13",
+          description: "Доступный смартфон с хорошими характеристиками",
+          price: 189.99,
+          image_url: "https://via.placeholder.com/300x300?text=Redmi+Note+13",
+          category: "Смартфоны",
+          in_stock: true,
+        },
+        {
+          id: 5,
+          name: "USB-C кабель",
+          description: "Качественный кабель для быстрой зарядки",
+          price: 12.99,
+          image_url: "https://via.placeholder.com/300x300?text=USB-C+Cable",
+          category: "Аксессуары",
+          in_stock: true,
+        },
+        {
+          id: 6,
+          name: "Беспроводная мышь Logitech",
+          description: "Эргономичная беспроводная мышь для работы",
+          price: 29.99,
+          image_url: "https://via.placeholder.com/300x300?text=Logitech+Mouse",
+          category: "Аксессуары",
+          in_stock: false,
+        },
+      ];
+
+      // Функция отображения товаров (адаптированная из products.js)
+      function displayProducts(products) {
+        const productListElement = document.getElementById("product-list");
+
+        if (!productListElement) {
+          console.error("Элемент product-list не найден");
+          return;
+        }
+
+        productListElement.innerHTML = "";
+
+        if (!products || products.length === 0) {
+          productListElement.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Товары не найдены</h3>
+                        <p>В настоящее время товары отсутствуют</p>
+                    </div>
+                `;
+          return;
+        }
+
+        products.forEach((product) => {
+          const productTile = document.createElement("div");
+          productTile.className = "product-tile";
+          productTile.setAttribute("data-product-id", product.id);
+          productTile.innerHTML = `
+                    <img src="${product.image_url}" 
+                         alt="${product.name}" 
+                         onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'" />
+                    
+                    <div class="category">${
+                      product.category || "Без категории"
+                    }</div>
+                    
+                    <h3>${product.name}</h3>
+                    
+                    <div class="description">${product.description || ""}</div>
+                    
+                    <div class="price">€${product.price.toFixed(2)}</div>
+                    
+                    <button class="add-to-cart-btn" 
+                            onclick="addToCart(${product.id})" 
+                            ${!product.in_stock ? "disabled" : ""}>
+                        <i class="fas fa-shopping-cart"></i> 
+                        ${product.in_stock ? "В корзину" : "Нет в наличии"}
+                    </button>
+                `;
+          productListElement.appendChild(productTile);
+        });
+      }
+
+      // Функция загрузки тестовых товаров
+      function loadTestProducts() {
+        displayProducts(testProducts);
+      }
+
+      // Функция очистки товаров
+      function clearProducts() {
+        const productListElement = document.getElementById("product-list");
+        productListElement.innerHTML = `
+                <div class="no-products">
+                    <i class="fas fa-box-open"></i>
+                    <h3>Товары очищены</h3>
+                    <p>Нажмите "Загрузить тестовые товары" для показа</p>
+                </div>
+            `;
+      }
+
+      // Функция теста авторизации
+      function testAuth() {
+        if (typeof saveUserData === "function") {
+          saveUserData({
+            token: "test-token-123",
+            nickname: "Тестовый Пользователь",
+            email: "test@example.com",
+            role: "admin",
+          });
+
+          if (typeof updateNavigationAuth === "function") {
+            updateNavigationAuth();
+          }
+
+          alert("Авторизация успешна! Проверьте навигацию.");
+        } else {
+          alert("Модуль navigation.js не загружен");
+        }
+      }
+
+      // Заглушка для функции добавления в корзину
+      function addToCart(productId) {
+        alert(`Товар с ID ${productId} добавлен в корзину (заглушка)`);
+      }
+
+      // Заглушка для logout
+      function logout() {
+        if (typeof localStorage !== "undefined") {
+          localStorage.clear();
+        }
+        if (typeof updateNavigationAuth === "function") {
+          updateNavigationAuth();
+        }
+        alert("Выход выполнен");
+      }
+    </script>
+  </body>
+</html>

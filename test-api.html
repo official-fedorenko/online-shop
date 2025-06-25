@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тест API товаров</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .api-test {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+      }
+      .status {
+        font-weight: bold;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      .loading {
+        color: orange;
+      }
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+      }
+      .product-card {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Тест API товаров</h1>
+
+    <div class="api-test">
+      <h2>Статус подключения к API</h2>
+      <div id="api-status" class="status loading">Проверяем подключение...</div>
+    </div>
+
+    <div class="api-test">
+      <h2>Загрузка товаров</h2>
+      <button onclick="testProducts()">Загрузить товары</button>
+      <div id="products-status" class="status"></div>
+      <div id="products-count"></div>
+      <div id="products-list" class="products-grid"></div>
+    </div>
+
+    <script>
+      // Базовый URL API
+      const API_BASE_URL =
+        window.location.hostname === "localhost"
+          ? "http://localhost:3000/api"
+          : "/api";
+
+      // Проверка доступности API
+      async function checkAPI() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/products`);
+          if (response.ok) {
+            document.getElementById("api-status").innerHTML =
+              '<span class="success">✅ API доступно</span>';
+            return true;
+          } else {
+            document.getElementById(
+              "api-status"
+            ).innerHTML = `<span class="error">❌ API недоступно (${response.status})</span>`;
+            return false;
+          }
+        } catch (error) {
+          document.getElementById(
+            "api-status"
+          ).innerHTML = `<span class="error">❌ Ошибка подключения: ${error.message}</span>`;
+          return false;
+        }
+      }
+
+      // Тест загрузки товаров
+      async function testProducts() {
+        const statusEl = document.getElementById("products-status");
+        const countEl = document.getElementById("products-count");
+        const listEl = document.getElementById("products-list");
+
+        statusEl.innerHTML = '<span class="loading">Загружаем товары...</span>';
+        listEl.innerHTML = "";
+        countEl.innerHTML = "";
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/products`);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+
+          if (data.products && Array.isArray(data.products)) {
+            statusEl.innerHTML =
+              '<span class="success">✅ Товары загружены</span>';
+            countEl.innerHTML = `<strong>Количество товаров: ${data.products.length}</strong>`;
+
+            // Отображаем товары
+            data.products.forEach((product) => {
+              const productEl = document.createElement("div");
+              productEl.className = "product-card";
+              productEl.innerHTML = `
+                            <h4>${product.name}</h4>
+                            <p>€${product.price}</p>
+                            <small>${product.category}</small>
+                            <br><small>ID: ${product.id}</small>
+                        `;
+              listEl.appendChild(productEl);
+            });
+          } else {
+            statusEl.innerHTML =
+              '<span class="error">❌ Неверный формат данных</span>';
+          }
+        } catch (error) {
+          statusEl.innerHTML = `<span class="error">❌ Ошибка: ${error.message}</span>`;
+        }
+      }
+
+      // Автоматическая проверка при загрузке
+      document.addEventListener("DOMContentLoaded", function () {
+        checkAPI();
+      });
+    </script>
+  </body>
+</html>

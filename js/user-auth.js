@@ -6,6 +6,20 @@ const API_BASE_URL =
     ? "http://localhost:3000/api"
     : "/api";
 
+// Функция сохранения данных пользователя (совместимость с navigation.js)
+function saveUserData(userData) {
+  if (typeof window.saveUserData === "function") {
+    // Используем глобальную функцию из navigation.js если доступна
+    window.saveUserData(userData);
+  } else {
+    // Fallback для случаев когда navigation.js не загружен
+    localStorage.setItem("token", userData.token || "");
+    localStorage.setItem("userName", userData.nickname || "");
+    localStorage.setItem("userEmail", userData.email || "");
+    localStorage.setItem("userRole", userData.role || "");
+  }
+}
+
 // Инициализация при загрузке страницы
 document.addEventListener("DOMContentLoaded", function () {
   initializeAuth();
@@ -50,20 +64,29 @@ async function handleLogin(event) {
     const data = await response.json();
 
     if (response.ok) {
-      // Сохраняем токен и данные пользователя
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      // Сохраняем токен и данные пользователя в едином формате
+      saveUserData({
+        token: data.token,
+        nickname: data.user.nickname,
+        email: data.user.email,
+        role: data.user.role,
+      });
 
       showMessage("Успешный вход! Перенаправление...", "success");
+
+      // Обновляем навигацию если функция доступна
+      if (typeof updateNavigationAuth !== "undefined") {
+        updateNavigationAuth();
+      }
 
       // Перенаправляем в зависимости от роли
       setTimeout(() => {
         if (data.user.role === "admin") {
-          window.location.href = "admin/index.html";
+          window.location.href = "/admin";
         } else {
-          window.location.href = "index.html";
+          window.location.href = "/";
         }
-      }, 1500);
+      }, 1000);
     } else {
       showMessage(data.message, "error");
     }
@@ -110,14 +133,23 @@ async function handleRegister(event) {
     if (response.ok) {
       showMessage("Аккаунт успешно создан! Перенаправление...", "success");
 
-      // Сохраняем токен и данные пользователя
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
+      // Сохраняем токен и данные пользователя в едином формате
+      saveUserData({
+        token: data.token,
+        nickname: data.user.nickname,
+        email: data.user.email,
+        role: data.user.role,
+      });
+
+      // Обновляем навигацию если функция доступна
+      if (typeof updateNavigationAuth !== "undefined") {
+        updateNavigationAuth();
+      }
 
       // Перенаправляем на главную страницу
       setTimeout(() => {
-        window.location.href = "index.html";
-      }, 2000);
+        window.location.href = "/";
+      }, 1500);
     } else {
       showMessage(data.message, "error");
     }
@@ -160,17 +192,27 @@ function isValidEmail(email) {
 
 // Получить текущего пользователя
 function getCurrentUser() {
-  const user = localStorage.getItem("currentUser");
-  return user ? JSON.parse(user) : null;
+  const userName = localStorage.getItem("userName");
+  const userEmail = localStorage.getItem("userEmail");
+  const userRole = localStorage.getItem("userRole");
+
+  if (userName && userEmail && userRole) {
+    return {
+      nickname: userName,
+      email: userEmail,
+      role: userRole,
+    };
+  }
+  return null;
 }
 
 // Получить токен авторизации
 function getAuthToken() {
-  return localStorage.getItem("authToken");
+  return localStorage.getItem("token");
 }
 
 // Проверить авторизацию на сервере
-async function verifyAuth() {
+async function verifyAuthLocal() {
   const token = getAuthToken();
   if (!token) return null;
 
@@ -178,19 +220,32 @@ async function verifyAuth() {
     const response = await fetch(`${API_BASE_URL}/auth/verify`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ token }),
     });
 
     if (response.ok) {
       const data = await response.json();
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
-      return data.user;
+      if (data.valid && data.user) {
+        // Обновляем данные пользователя в едином формате
+        saveUserData({
+          token: token,
+          nickname: data.user.nickname,
+          email: data.user.email,
+          role: data.user.role,
+        });
+        return data.user;
+      } else {
+        // Только при явном отказе сервера сбрасываем авторизацию
+        logoutLocal();
+        return null;
+      }
     } else {
-      // Токен недействителен, очищаем данные
-      logout();
-      return null;
+      // При ошибке сети не сбрасываем, используем локальные данные
+      console.warn(
+        "Проблема с проверкой авторизации, используем локальные данные"
+      );
+      return getCurrentUser();
     }
   } catch (error) {
     console.error("Auth verification error:", error);
@@ -198,11 +253,20 @@ async function verifyAuth() {
   }
 }
 
-// Выйти из системы
-function logout() {
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("currentUser");
-  window.location.href = "auth.html";
+// Выйти из системы (используем глобальную функцию из navigation.js если доступна)
+function logoutLocal() {
+  if (typeof logout === "function") {
+    // Используем глобальную функцию из navigation.js
+    logout();
+  } else {
+    // Fallback если navigation.js не загружен
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("cart");
+    window.location.href = "/auth";
+  }
 }
 
 // Проверить статус авторизации

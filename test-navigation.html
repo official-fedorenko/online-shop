@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Тест навигации</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #ddd;
+      }
+      button {
+        margin: 5px;
+        padding: 10px;
+      }
+      .status {
+        font-weight: bold;
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+    </style>
+    <script src="js/navigation.js"></script>
+    <script src="js/user-auth.js"></script>
+  </head>
+  <body>
+    <h1>Тест навигации и авторизации</h1>
+
+    <div class="test-section">
+      <h2>Состояние авторизации</h2>
+      <div id="auth-status">Проверяем...</div>
+      <div id="user-data"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Тестовые действия</h2>
+      <button onclick="testLogin()">Тестовый вход (админ)</button>
+      <button onclick="testUserLogin()">Тестовый вход (пользователь)</button>
+      <button onclick="testLogout()">Выход</button>
+      <button onclick="checkAuth()">Проверить авторизацию</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Навигация</h2>
+      <div id="navigation-test">
+        <span id="authLink" style="display: none">Войти</span>
+        <span id="userInfo" style="display: none">
+          Привет, <span id="userName"></span>!
+          <span id="adminLink" style="display: none">[Админ]</span>
+          <span id="ordersLink" style="display: none">[Заказы]</span>
+        </span>
+      </div>
+    </div>
+
+    <script>
+      function testLogin() {
+        // Имитируем успешный вход админа
+        saveUserData({
+          token: "test-admin-token",
+          nickname: "Админ Тестов",
+          email: "admin@test.com",
+          role: "admin",
+        });
+        updateNavigationAuth();
+        checkAuth();
+      }
+
+      function testUserLogin() {
+        // Имитируем успешный вход пользователя
+        saveUserData({
+          token: "test-user-token",
+          nickname: "Пользователь Тестов",
+          email: "user@test.com",
+          role: "user",
+        });
+        updateNavigationAuth();
+        checkAuth();
+      }
+
+      function testLogout() {
+        if (typeof logout === "function") {
+          logout();
+        } else {
+          console.error("Функция logout не найдена");
+        }
+        checkAuth();
+      }
+
+      function checkAuth() {
+        const userData = getUserData();
+        const isAuth = isLoggedIn();
+
+        document.getElementById("auth-status").innerHTML = `<span class="${
+          isAuth ? "status" : "error"
+        }">
+                    ${isAuth ? "Авторизован" : "Не авторизован"}
+                </span>`;
+
+        document.getElementById("user-data").innerHTML = `
+                <strong>Данные пользователя:</strong><br>
+                Token: ${userData.token || "нет"}<br>
+                Nickname: ${userData.nickname || "нет"}<br>
+                Email: ${userData.email || "нет"}<br>
+                Role: ${userData.role || "нет"}
+            `;
+      }
+
+      // Инициализация при загрузке
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => {
+          checkAuth();
+          if (typeof updateNavigationAuth === "function") {
+            updateNavigationAuth();
+          }
+        }, 100);
+      });
+    </script>
+  </body>
+</html>

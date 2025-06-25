@@ -8,7 +8,7 @@ const API_BASE_URL =
 
 // Получение токена авторизации
 function getAuthToken() {
-  return localStorage.getItem("authToken");
+  return localStorage.getItem("token") || localStorage.getItem("authToken");
 }
 
 // Получение заголовков с авторизацией

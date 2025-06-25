@@ -22,17 +22,13 @@ function getAuthHeaders() {
 
 // Инициализация админки
 function initializeAdminPanel(currentUser) {
-  document.getElementById("admin-name").textContent =
-    currentUser.nickname || currentUser.email;
+  const adminNameEl = document.getElementById("admin-name");
+  if (adminNameEl) {
+    adminNameEl.textContent = currentUser.nickname || currentUser.email;
+  }
 
   loadStatistics();
   loadProductList();
-
-  // Обработчики для форм
-  const addProductForm = document.getElementById("add-product-form");
-  if (addProductForm) {
-    addProductForm.addEventListener("submit", handleAddProduct);
-  }
 }
 
 // Загрузка статистики
@@ -65,24 +61,35 @@ async function loadStatistics() {
 
 // Загрузка списка товаров для админки
 async function loadProductList() {
+  console.log("Загружаем список товаров для админки...");
   try {
-    const response = await fetch(`${API_BASE_URL}/products`);
+    const headers = getAuthHeaders();
+    console.log("Отправляем запрос с заголовками:", headers);
+
+    const response = await fetch(`${API_BASE_URL}/products`, {
+      headers: headers,
+    });
+
+    console.log("Ответ сервера:", response.status, response.statusText);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log("Получены товары:", data);
     displayAdminProductList(data.products);
   } catch (error) {
     console.error("Ошибка загрузки товаров:", error);
-    showProductError("Не удалось загрузить список товаров");
+    showProductError("Не удалось загрузить список товаров: " + error.message);
   }
 }
 
 // Отображение списка товаров в админке
 function displayAdminProductList(products) {
+  console.log("Отображаем товары в админке:", products);
   const productListElement = document.getElementById("admin-product-list");
+  console.log("Элемент admin-product-list:", productListElement);
 
   if (!productListElement) {
     console.error("Элемент admin-product-list не найден");
@@ -90,6 +97,7 @@ function displayAdminProductList(products) {
   }
 
   if (!products || products.length === 0) {
+    console.log("Товары отсутствуют, показываем заглушку");
     productListElement.innerHTML = `
             <div class="no-products">
                 <i class="fas fa-box-open"></i>
@@ -99,6 +107,9 @@ function displayAdminProductList(products) {
         `;
     return;
   }
+
+  console.log(`Отображаем ${products.length} товаров`);
+  // ...existing code...
 
   productListElement.innerHTML = products
     .map(
@@ -472,3 +483,35 @@ function logout() {
   localStorage.removeItem("authToken");
   window.location.href = "/auth";
 }
+
+// Инициализация при загрузке страницы
+document.addEventListener("DOMContentLoaded", function () {
+  // Проверяем авторизацию и права доступа
+  const userData = getUserData
+    ? getUserData()
+    : {
+        token: localStorage.getItem("token"),
+        role: localStorage.getItem("userRole"),
+        nickname: localStorage.getItem("userName"),
+      };
+
+  if (!userData.token || userData.role !== "admin") {
+    console.warn("Нет прав администратора");
+    if (window.location.pathname.includes("admin")) {
+      window.location.href = "/auth";
+      return;
+    }
+  }
+
+  // Инициализируем админку
+  if (document.getElementById("admin-name")) {
+    initializeAdminPanel(userData);
+  }
+
+  // Инициализируем форму добавления товара
+  const addProductForm = document.getElementById("add-product-form");
+  if (addProductForm) {
+    console.log("Найдена форма добавления товара, подключаем обработчик");
+    addProductForm.addEventListener("submit", handleAddProduct);
+  }
+});

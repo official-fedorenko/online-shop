@@ -33,7 +33,7 @@ async function handleLogin(event) {
   event.preventDefault();
 
   const formData = new FormData(event.target);
-  const login = formData.get("login");
+  const email = formData.get("email");
   const password = formData.get("password");
 
   try {
@@ -44,7 +44,7 @@ async function handleLogin(event) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ login, password }),
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await response.json();
@@ -259,7 +259,7 @@ function togglePassword(inputId) {
 // Заполнение демо аккаунта
 function fillDemoAccount(type) {
   if (type === "admin") {
-    document.getElementById("login-email").value = "Admin";
+    document.getElementById("login-email").value = "admin@shop.com";
     document.getElementById("login-password").value = "admin123";
   } else {
     // Можно добавить демо пользователя, если нужно

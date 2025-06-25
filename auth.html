@@ -24,15 +24,15 @@
           <form id="loginForm">
             <div class="form-group">
               <label for="login-email">
-                <i class="fas fa-envelope"></i>
-                Email
+                <i class="fas fa-user"></i>
+                Email или никнейм
               </label>
               <input
-                type="email"
+                type="text"
                 id="login-email"
-                name="email"
+                name="login"
                 required
-                placeholder="Введите ваш email"
+                placeholder="Введите email или никнейм"
               />
             </div>
 
@@ -77,33 +77,18 @@
         <div id="register-form" class="auth-form">
           <h2><i class="fas fa-user-plus"></i> Регистрация</h2>
           <form id="registerForm">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="register-firstname">
-                  <i class="fas fa-user"></i>
-                  Имя
-                </label>
-                <input
-                  type="text"
-                  id="register-firstname"
-                  name="firstname"
-                  required
-                  placeholder="Ваше имя"
-                />
-              </div>
-              <div class="form-group">
-                <label for="register-lastname">
-                  <i class="fas fa-user"></i>
-                  Фамилия
-                </label>
-                <input
-                  type="text"
-                  id="register-lastname"
-                  name="lastname"
-                  required
-                  placeholder="Ваша фамилия"
-                />
-              </div>
+            <div class="form-group">
+              <label for="register-nickname">
+                <i class="fas fa-user"></i>
+                Никнейм
+              </label>
+              <input
+                type="text"
+                id="register-nickname"
+                name="nickname"
+                required
+                placeholder="Ваш никнейм"
+              />
             </div>
 
             <div class="form-group">
@@ -168,14 +153,6 @@
               </div>
             </div>
 
-            <div class="form-group checkbox-group">
-              <label class="checkbox-label">
-                <input type="checkbox" id="register-role" name="isAdmin" />
-                <span class="checkmark"></span>
-                Я администратор (для демонстрации)
-              </label>
-            </div>
-
             <button type="submit" class="btn btn-primary btn-full">
               <i class="fas fa-user-plus"></i>
               Зарегистрироваться
@@ -203,10 +180,11 @@
           <i class="fas fa-info-circle"></i> Демо аккаунты для тестирования:
         </h3>
         <div class="demo-account" onclick="fillDemoAccount('admin')">
-          <strong>Администратор:</strong> admin@shop.com / admin123
+          <strong>Администратор:</strong> Admin / admin123
         </div>
         <div class="demo-account" onclick="fillDemoAccount('user')">
-          <strong>Пользователь:</strong> user@shop.com / user123
+          <strong>Пользователь:</strong> Создайте новый аккаунт через
+          регистрацию
         </div>
       </div>
     </div>

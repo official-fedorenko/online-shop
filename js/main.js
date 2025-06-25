@@ -25,7 +25,7 @@ function showUserInfo(user) {
   const adminLink = document.getElementById("admin-link");
 
   if (userInfo && userName) {
-    userName.textContent = user.firstName;
+    userName.textContent = user.nickname;
     userInfo.style.display = "block";
   }
 

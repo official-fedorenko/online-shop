@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Мои заказы - Интернет Магазин</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      .orders-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .orders-container {
+        margin-top: 20px;
+      }
+
+      .order-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #007bff;
+      }
+
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .order-number {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .order-status {
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+
+      .status-processing {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-confirmed {
+        background: #cce5ff;
+        color: #004085;
+      }
+
+      .status-completed {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .order-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .info-item {
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 4px;
+      }
+
+      .info-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+
+      .info-value {
+        font-weight: 500;
+        color: #333;
+      }
+
+      .order-items {
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+      }
+
+      .order-items h4 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 16px;
+      }
+
+      .items-summary {
+        color: #666;
+        line-height: 1.5;
+      }
+
+      .order-total {
+        text-align: right;
+        font-size: 18px;
+        font-weight: 600;
+        color: #007bff;
+        margin-top: 10px;
+      }
+
+      .view-details-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-top: 10px;
+      }
+
+      .view-details-btn:hover {
+        background: #0056b3;
+      }
+
+      .order-details {
+        display: none;
+        margin-top: 15px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 4px;
+      }
+
+      .order-details.show {
+        display: block;
+      }
+
+      .details-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .details-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-info {
+        flex: 1;
+      }
+
+      .item-name {
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+
+      .item-meta {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .item-price {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .empty-orders {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+      }
+
+      .empty-orders h3 {
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .continue-shopping {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+
+      .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .order-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .order-info {
+          grid-template-columns: 1fr;
+        }
+
+        .details-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="nav-container">
+          <a href="/" class="nav-logo">Интернет Магазин</a>
+          <ul class="nav-menu">
+            <li><a href="/">Главная</a></li>
+            <li><a href="/cart">Корзина</a></li>
+            <li><a href="/my-orders" class="active">Мои заказы</a></li>
+            <li class="auth-links">
+              <a href="/auth" id="authLink">Войти</a>
+              <span id="userInfo" style="display: none">
+                <span id="userName"></span>
+                <a href="#" onclick="logout()">Выйти</a>
+              </span>
+            </li>
+          </ul>
+          <div class="cart-icon">
+            <a href="/cart"> 🛒 <span class="cart-count">0</span> </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="orders-page">
+      <h1>Мои заказы</h1>
+
+      <div class="orders-container" id="ordersContainer">
+        <div class="loading">Загрузка заказов...</div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <p>&copy; 2024 Интернет Магазин. Все права защищены.</p>
+      </div>
+    </footer>
+
+    <script src="/js/cart.js"></script>
+    <script src="/js/user-auth.js"></script>
+    <script>
+      // Инициализация страницы заказов
+      document.addEventListener("DOMContentLoaded", function () {
+        // Проверяем авторизацию
+        if (!cart.isUserLoggedIn()) {
+          alert("Для просмотра заказов необходимо войти в систему");
+          window.location.href = "/auth";
+          return;
+        }
+
+        // Загружаем заказы
+        loadOrders();
+
+        // Обновляем навигацию
+        updateNavigationAuth();
+
+        // Обновляем счетчик корзины
+        cart.updateCartDisplay();
+      });
+
+      async function loadOrders() {
+        const container = document.getElementById("ordersContainer");
+
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch("/api/orders/my", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Ошибка загрузки заказов");
+          }
+
+          const orders = await response.json();
+          renderOrders(orders);
+        } catch (error) {
+          console.error("Ошибка загрузки заказов:", error);
+          container.innerHTML = `
+                    <div class="error-message">
+                        Ошибка загрузки заказов: ${error.message}
+                    </div>
+                `;
+        }
+      }
+
+      function renderOrders(orders) {
+        const container = document.getElementById("ordersContainer");
+
+        if (orders.length === 0) {
+          container.innerHTML = `
+                    <div class="empty-orders">
+                        <h3>У вас пока нет заказов</h3>
+                        <p>Оформите ваш первый заказ в нашем каталоге</p>
+                        <a href="/" class="continue-shopping">Перейти к покупкам</a>
+                    </div>
+                `;
+          return;
+        }
+
+        container.innerHTML = orders
+          .map(
+            (order) => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-number">Заказ #${order.id}</div>
+                        <div class="order-status status-${order.status}">
+                            ${getStatusText(order.status)}
+                        </div>
+                    </div>
+                    
+                    <div class="order-info">
+                        <div class="info-item">
+                            <div class="info-label">Дата заказа</div>
+                            <div class="info-value">${formatDate(
+                              order.created_at
+                            )}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Способ доставки</div>
+                            <div class="info-value">${getDeliveryText(
+                              order.delivery_type
+                            )}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Способ оплаты</div>
+                            <div class="info-value">${getPaymentText(
+                              order.payment_method
+                            )}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Сумма заказа</div>
+                            <div class="info-value">€${order.total_amount.toFixed(
+                              2
+                            )}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-items">
+                        <h4>Товары:</h4>
+                        <div class="items-summary">${
+                          order.items_summary || "Загрузка..."
+                        }</div>
+                        <div class="order-total">
+                            Итого: €${order.total_amount.toFixed(2)}
+                        </div>
+                        <button class="view-details-btn" onclick="toggleOrderDetails(${
+                          order.id
+                        })">
+                            Подробнее
+                        </button>
+                        <div class="order-details" id="details-${order.id}">
+                            <div class="loading">Загрузка деталей заказа...</div>
+                        </div>
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      async function toggleOrderDetails(orderId) {
+        const detailsContainer = document.getElementById(`details-${orderId}`);
+
+        if (detailsContainer.classList.contains("show")) {
+          detailsContainer.classList.remove("show");
+          return;
+        }
+
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(`/api/orders/${orderId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Ошибка загрузки деталей заказа");
+          }
+
+          const orderDetails = await response.json();
+          renderOrderDetails(detailsContainer, orderDetails);
+          detailsContainer.classList.add("show");
+        } catch (error) {
+          console.error("Ошибка загрузки деталей:", error);
+          detailsContainer.innerHTML = `
+                    <div class="error-message">
+                        Ошибка загрузки деталей: ${error.message}
+                    </div>
+                `;
+          detailsContainer.classList.add("show");
+        }
+      }
+
+      function renderOrderDetails(container, order) {
+        const deliveryCost = getDeliveryCost(order.delivery_type);
+        const subtotal = order.total_amount - deliveryCost;
+
+        container.innerHTML = `
+                <div class="details-section">
+                    <strong>Товары в заказе:</strong>
+                    ${order.items
+                      .map(
+                        (item) => `
+                        <div class="details-item">
+                            <div class="item-info">
+                                <div class="item-name">${
+                                  item.product_name
+                                }</div>
+                                <div class="item-meta">${
+                                  item.quantity
+                                } × €${item.product_price.toFixed(2)}</div>
+                            </div>
+                            <div class="item-price">€${item.total_price.toFixed(
+                              2
+                            )}</div>
+                        </div>
+                    `
+                      )
+                      .join("")}
+                    
+                    <div class="details-item">
+                        <div class="item-info">
+                            <div class="item-name">Стоимость товаров:</div>
+                        </div>
+                        <div class="item-price">€${subtotal.toFixed(2)}</div>
+                    </div>
+                    
+                    ${
+                      deliveryCost > 0
+                        ? `
+                        <div class="details-item">
+                            <div class="item-info">
+                                <div class="item-name">Доставка:</div>
+                            </div>
+                            <div class="item-price">€${deliveryCost.toFixed(
+                              2
+                            )}</div>
+                        </div>
+                    `
+                        : ""
+                    }
+                    
+                    <div class="details-item" style="border-top: 2px solid #007bff; font-weight: 600;">
+                        <div class="item-info">
+                            <div class="item-name">Итого к оплате:</div>
+                        </div>
+                        <div class="item-price">€${order.total_amount.toFixed(
+                          2
+                        )}</div>
+                    </div>
+                </div>
+                
+                <div class="details-section" style="margin-top: 15px;">
+                    <strong>Контактная информация:</strong>
+                    <div class="details-item">
+                        <div class="item-info">Имя: ${order.customer_name}</div>
+                    </div>
+                    <div class="details-item">
+                        <div class="item-info">Email: ${
+                          order.customer_email
+                        }</div>
+                    </div>
+                    <div class="details-item">
+                        <div class="item-info">Телефон: ${
+                          order.customer_phone
+                        }</div>
+                    </div>
+                    ${
+                      order.delivery_address
+                        ? `
+                        <div class="details-item">
+                            <div class="item-info">Адрес доставки: ${order.delivery_address}</div>
+                        </div>
+                    `
+                        : ""
+                    }
+                    ${
+                      order.notes
+                        ? `
+                        <div class="details-item">
+                            <div class="item-info">Комментарий: ${order.notes}</div>
+                        </div>
+                    `
+                        : ""
+                    }
+                </div>
+            `;
+      }
+
+      function getStatusText(status) {
+        const statusMap = {
+          processing: "В обработке",
+          confirmed: "Подтвержден",
+          completed: "Завершен",
+          cancelled: "Отменен",
+        };
+        return statusMap[status] || status;
+      }
+
+      function getDeliveryText(deliveryType) {
+        const deliveryMap = {
+          pickup: "Самовывоз",
+          courier: "Курьерская доставка",
+          delivery: "Почтовая доставка",
+        };
+        return deliveryMap[deliveryType] || deliveryType;
+      }
+
+      function getPaymentText(paymentMethod) {
+        const paymentMap = {
+          cash: "Наличные",
+          iban: "Банковский перевод",
+        };
+        return paymentMap[paymentMethod] || paymentMethod;
+      }
+
+      function getDeliveryCost(deliveryType) {
+        switch (deliveryType) {
+          case "courier":
+            return 5;
+          case "delivery":
+            return 3;
+          default:
+            return 0;
+        }
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("ru-RU", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      // Функция выхода из системы
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("cart");
+        window.location.href = "/";
+      }
+    </script>
+  </body>
+</html>

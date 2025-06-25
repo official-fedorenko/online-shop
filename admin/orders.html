@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Управление заказами - Админка</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      .admin-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .filters {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .filter-group label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+      }
+
+      .filter-group select,
+      .filter-group input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .orders-table {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .table th,
+      .table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      .table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .table tr:hover {
+        background: #f8f9fa;
+      }
+
+      .status-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+
+      .status-processing {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .status-confirmed {
+        background: #cce5ff;
+        color: #004085;
+      }
+
+      .status-completed {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .order-id {
+        font-weight: 600;
+        color: #007bff;
+      }
+
+      .customer-info {
+        font-size: 14px;
+      }
+
+      .customer-name {
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+
+      .customer-contact {
+        color: #666;
+        font-size: 12px;
+      }
+
+      .order-total {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .action-select {
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 12px;
+        background: white;
+      }
+
+      .view-btn {
+        background: #17a2b8;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      .view-btn:hover {
+        background: #138496;
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .pagination button {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      .pagination button:hover {
+        background: #f8f9fa;
+      }
+
+      .pagination button.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+      }
+
+      .pagination button:disabled {
+        background: #f8f9fa;
+        color: #6c757d;
+        cursor: not-allowed;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+
+      .error-message {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background: white;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+      }
+
+      .order-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .detail-section {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+      }
+
+      .detail-section h4 {
+        margin: 0 0 10px 0;
+        color: #333;
+      }
+
+      .detail-item {
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .detail-label {
+        font-weight: 500;
+        color: #666;
+      }
+
+      @media (max-width: 768px) {
+        .filter-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .orders-table {
+          overflow-x: auto;
+        }
+
+        .table {
+          min-width: 800px;
+        }
+
+        .order-details-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="nav-container">
+          <a href="/admin" class="nav-logo">Админка</a>
+          <ul class="nav-menu">
+            <li><a href="/admin">Статистика</a></li>
+            <li><a href="/admin/orders" class="active">Заказы</a></li>
+            <li><a href="/admin/add-product">Товары</a></li>
+            <li><a href="/">На сайт</a></li>
+          </ul>
+          <span id="userInfo">
+            <span id="userName"></span>
+            <a href="#" onclick="logout()">Выйти</a>
+          </span>
+        </div>
+      </nav>
+    </header>
+
+    <main class="admin-page">
+      <div class="admin-header">
+        <h1>Управление заказами</h1>
+        <div class="stats">
+          <span id="totalOrders">Всего заказов: 0</span>
+        </div>
+      </div>
+
+      <div class="error-message" id="errorMessage" style="display: none"></div>
+
+      <div class="filters">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>Статус</label>
+            <select id="statusFilter">
+              <option value="">Все статусы</option>
+              <option value="processing">В обработке</option>
+              <option value="confirmed">Подтвержден</option>
+              <option value="completed">Завершен</option>
+              <option value="cancelled">Отменен</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Показать по</label>
+            <select id="limitFilter">
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="loadOrders()">
+            Применить фильтры
+          </button>
+        </div>
+      </div>
+
+      <div class="orders-table">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>№ Заказа</th>
+              <th>Дата</th>
+              <th>Клиент</th>
+              <th>Товары</th>
+              <th>Сумма</th>
+              <th>Статус</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr>
+              <td colspan="7" class="loading">Загрузка заказов...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </main>
+
+    <!-- Модальное окно деталей заказа -->
+    <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modalTitle">Детали заказа</h2>
+          <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div id="modalBody">
+          <!-- Содержимое будет добавлено динамически -->
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/user-auth.js"></script>
+    <script>
+      let currentPage = 1;
+      let currentFilters = {};
+
+      // Инициализация страницы
+      document.addEventListener("DOMContentLoaded", function () {
+        // Проверяем авторизацию и права админа
+        checkAdminAuth();
+
+        // Загружаем заказы
+        loadOrders();
+
+        // Обновляем навигацию
+        updateNavigationAuth();
+      });
+
+      async function checkAdminAuth() {
+        const token = localStorage.getItem("token");
+        const userRole = localStorage.getItem("userRole");
+
+        if (!token || userRole !== "admin") {
+          alert("Доступ запрещен. Требуются права администратора.");
+          window.location.href = "/auth";
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/auth/verify", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Недействительный токен");
+          }
+
+          const data = await response.json();
+          if (data.user.role !== "admin") {
+            throw new Error("Недостаточно прав");
+          }
+
+          // Отображаем имя пользователя
+          document.getElementById("userName").textContent = data.user.nickname;
+        } catch (error) {
+          console.error("Ошибка проверки авторизации:", error);
+          localStorage.removeItem("token");
+          localStorage.removeItem("userRole");
+          window.location.href = "/auth";
+        }
+      }
+
+      async function loadOrders(page = 1) {
+        const tableBody = document.getElementById("ordersTableBody");
+        const errorContainer = document.getElementById("errorMessage");
+
+        // Скрываем ошибки
+        errorContainer.style.display = "none";
+
+        // Показываем загрузку
+        tableBody.innerHTML =
+          '<tr><td colspan="7" class="loading">Загрузка заказов...</td></tr>';
+
+        try {
+          // Собираем параметры запроса
+          const params = new URLSearchParams({
+            page: page,
+            limit: document.getElementById("limitFilter").value || 20,
+          });
+
+          const status = document.getElementById("statusFilter").value;
+          if (status) {
+            params.append("status", status);
+          }
+
+          const token = localStorage.getItem("token");
+          const response = await fetch(`/api/orders?${params.toString()}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Ошибка загрузки заказов");
+          }
+
+          const data = await response.json();
+          renderOrders(data.orders);
+          renderPagination(data.pagination);
+
+          // Обновляем статистику
+          document.getElementById(
+            "totalOrders"
+          ).textContent = `Всего заказов: ${data.pagination.total}`;
+        } catch (error) {
+          console.error("Ошибка загрузки заказов:", error);
+          errorContainer.textContent = error.message;
+          errorContainer.style.display = "block";
+          tableBody.innerHTML =
+            '<tr><td colspan="7" class="error">Ошибка загрузки данных</td></tr>';
+        }
+      }
+
+      function renderOrders(orders) {
+        const tableBody = document.getElementById("ordersTableBody");
+
+        if (orders.length === 0) {
+          tableBody.innerHTML =
+            '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #666;">Заказы не найдены</td></tr>';
+          return;
+        }
+
+        tableBody.innerHTML = orders
+          .map(
+            (order) => `
+                <tr>
+                    <td class="order-id">#${order.id}</td>
+                    <td>${formatDate(order.created_at)}</td>
+                    <td class="customer-info">
+                        <div class="customer-name">${order.customer_name}</div>
+                        <div class="customer-contact">${
+                          order.customer_email
+                        }</div>
+                        <div class="customer-contact">${
+                          order.customer_phone
+                        }</div>
+                        ${
+                          order.user_nickname
+                            ? `<div class="customer-contact">@${order.user_nickname}</div>`
+                            : ""
+                        }
+                    </td>
+                    <td style="font-size: 12px;">${
+                      order.items_summary || "Загрузка..."
+                    }</td>
+                    <td class="order-total">€${order.total_amount.toFixed(
+                      2
+                    )}</td>
+                    <td>
+                        <select class="action-select" onchange="updateOrderStatus(${
+                          order.id
+                        }, this.value)" data-current="${order.status}">
+                            <option value="processing" ${
+                              order.status === "processing" ? "selected" : ""
+                            }>В обработке</option>
+                            <option value="confirmed" ${
+                              order.status === "confirmed" ? "selected" : ""
+                            }>Подтвержден</option>
+                            <option value="completed" ${
+                              order.status === "completed" ? "selected" : ""
+                            }>Завершен</option>
+                            <option value="cancelled" ${
+                              order.status === "cancelled" ? "selected" : ""
+                            }>Отменен</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="view-btn" onclick="viewOrderDetails(${
+                          order.id
+                        })">Детали</button>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+      }
+
+      function renderPagination(pagination) {
+        const container = document.getElementById("pagination");
+
+        if (pagination.pages <= 1) {
+          container.innerHTML = "";
+          return;
+        }
+
+        let paginationHTML = "";
+
+        // Кнопка "Предыдущая"
+        paginationHTML += `
+                <button onclick="loadOrders(${pagination.page - 1})" ${
+          pagination.page <= 1 ? "disabled" : ""
+        }>
+                    ← Предыдущая
+                </button>
+            `;
+
+        // Номера страниц
+        for (let i = 1; i <= pagination.pages; i++) {
+          if (
+            i === pagination.page ||
+            i === 1 ||
+            i === pagination.pages ||
+            (i >= pagination.page - 2 && i <= pagination.page + 2)
+          ) {
+            paginationHTML += `
+                        <button onclick="loadOrders(${i})" ${
+              i === pagination.page ? 'class="active"' : ""
+            }>
+                            ${i}
+                        </button>
+                    `;
+          } else if (i === pagination.page - 3 || i === pagination.page + 3) {
+            paginationHTML += "<span>...</span>";
+          }
+        }
+
+        // Кнопка "Следующая"
+        paginationHTML += `
+                <button onclick="loadOrders(${pagination.page + 1})" ${
+          pagination.page >= pagination.pages ? "disabled" : ""
+        }>
+                    Следующая →
+                </button>
+            `;
+
+        container.innerHTML = paginationHTML;
+        currentPage = pagination.page;
+      }
+
+      async function updateOrderStatus(orderId, newStatus) {
+        const selectElement = document.querySelector(
+          `select[onchange*="${orderId}"]`
+        );
+        const currentStatus = selectElement.dataset.current;
+
+        if (newStatus === currentStatus) {
+          return;
+        }
+
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(`/api/orders/${orderId}/status`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: newStatus }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Ошибка обновления статуса");
+          }
+
+          // Обновляем данные
+          selectElement.dataset.current = newStatus;
+
+          // Показываем уведомление
+          alert("Статус заказа обновлен");
+        } catch (error) {
+          console.error("Ошибка обновления статуса:", error);
+          // Возвращаем предыдущий статус
+          selectElement.value = currentStatus;
+          alert("Ошибка обновления статуса: " + error.message);
+        }
+      }
+
+      async function viewOrderDetails(orderId) {
+        const modal = document.getElementById("orderModal");
+        const modalBody = document.getElementById("modalBody");
+        const modalTitle = document.getElementById("modalTitle");
+
+        modalTitle.textContent = `Заказ #${orderId}`;
+        modalBody.innerHTML =
+          '<div class="loading">Загрузка деталей заказа...</div>';
+        modal.style.display = "block";
+
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(`/api/orders/${orderId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Ошибка загрузки деталей заказа");
+          }
+
+          const order = await response.json();
+          renderOrderModal(order);
+        } catch (error) {
+          console.error("Ошибка загрузки деталей:", error);
+          modalBody.innerHTML = `<div class="error">Ошибка загрузки: ${error.message}</div>`;
+        }
+      }
+
+      function renderOrderModal(order) {
+        const modalBody = document.getElementById("modalBody");
+        const deliveryCost = getDeliveryCost(order.delivery_type);
+        const subtotal = order.total_amount - deliveryCost;
+
+        modalBody.innerHTML = `
+                <div class="order-details-grid">
+                    <div class="detail-section">
+                        <h4>Информация о заказе</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Номер заказа:</span> #${
+                              order.id
+                            }
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Дата создания:</span> ${formatDate(
+                              order.created_at
+                            )}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Статус:</span> 
+                            <span class="status-badge status-${order.status}">
+                                ${getStatusText(order.status)}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Способ доставки:</span> ${getDeliveryText(
+                              order.delivery_type
+                            )}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Способ оплаты:</span> ${getPaymentText(
+                              order.payment_method
+                            )}
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>Контактная информация</h4>
+                        <div class="detail-item">
+                            <span class="detail-label">Имя:</span> ${
+                              order.customer_name
+                            }
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Email:</span> ${
+                              order.customer_email
+                            }
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Телефон:</span> ${
+                              order.customer_phone
+                            }
+                        </div>
+                        ${
+                          order.delivery_address
+                            ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Адрес доставки:</span><br>
+                                ${order.delivery_address}
+                            </div>
+                        `
+                            : ""
+                        }
+                        ${
+                          order.notes
+                            ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Комментарий:</span><br>
+                                ${order.notes}
+                            </div>
+                        `
+                            : ""
+                        }
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Товары в заказе</h4>
+                    ${order.items
+                      .map(
+                        (item) => `
+                        <div class="detail-item" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <div>
+                                <strong>${item.product_name}</strong><br>
+                                <small>${
+                                  item.quantity
+                                } × €${item.product_price.toFixed(2)}</small>
+                            </div>
+                            <div style="font-weight: 600;">
+                                €${item.total_price.toFixed(2)}
+                            </div>
+                        </div>
+                    `
+                      )
+                      .join("")}
+                    
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #007bff;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Стоимость товаров:</span>
+                            <span>€${subtotal.toFixed(2)}</span>
+                        </div>
+                        ${
+                          deliveryCost > 0
+                            ? `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>Доставка:</span>
+                                <span>€${deliveryCost.toFixed(2)}</span>
+                            </div>
+                        `
+                            : ""
+                        }
+                        <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 18px; color: #007bff;">
+                            <span>Итого к оплате:</span>
+                            <span>€${order.total_amount.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function closeModal() {
+        document.getElementById("orderModal").style.display = "none";
+      }
+
+      // Закрытие модального окна при клике вне его
+      window.onclick = function (event) {
+        const modal = document.getElementById("orderModal");
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+
+      function getStatusText(status) {
+        const statusMap = {
+          processing: "В обработке",
+          confirmed: "Подтвержден",
+          completed: "Завершен",
+          cancelled: "Отменен",
+        };
+        return statusMap[status] || status;
+      }
+
+      function getDeliveryText(deliveryType) {
+        const deliveryMap = {
+          pickup: "Самовывоз",
+          courier: "Курьерская доставка",
+          delivery: "Почтовая доставка",
+        };
+        return deliveryMap[deliveryType] || deliveryType;
+      }
+
+      function getPaymentText(paymentMethod) {
+        const paymentMap = {
+          cash: "Наличные",
+          iban: "Банковский перевод",
+        };
+        return paymentMap[paymentMethod] || paymentMethod;
+      }
+
+      function getDeliveryCost(deliveryType) {
+        switch (deliveryType) {
+          case "courier":
+            return 5;
+          case "delivery":
+            return 3;
+          default:
+            return 0;
+        }
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("ru-RU", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("userName");
+        window.location.href = "/auth";
+      }
+    </script>
+  </body>
+</html>

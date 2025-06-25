@@ -10,6 +10,7 @@ console.log("🌐 PORT:", process.env.PORT || 3000);
 const authRoutes = require("./routes/auth");
 const productsRoutes = require("./routes/products");
 const usersRoutes = require("./routes/users");
+const ordersRoutes = require("./routes/orders");
 const { initDatabase } = require("./models/database");
 
 const app = express();
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, "../")));
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/orders", ordersRoutes);
 
 // Маршруты для фронтенда
 app.get("/", (req, res) => {
@@ -41,8 +43,24 @@ app.get("/auth", (req, res) => {
   res.sendFile(path.join(__dirname, "../auth.html"));
 });
 
+app.get("/cart", (req, res) => {
+  res.sendFile(path.join(__dirname, "../cart.html"));
+});
+
+app.get("/checkout", (req, res) => {
+  res.sendFile(path.join(__dirname, "../checkout.html"));
+});
+
+app.get("/my-orders", (req, res) => {
+  res.sendFile(path.join(__dirname, "../my-orders.html"));
+});
+
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "../admin/index.html"));
+});
+
+app.get("/admin/orders", (req, res) => {
+  res.sendFile(path.join(__dirname, "../admin/orders.html"));
 });
 
 app.get("/admin/add-product", (req, res) => {

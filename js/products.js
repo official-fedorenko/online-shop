@@ -50,6 +50,7 @@ function displayProducts(products) {
   products.forEach((product) => {
     const productTile = document.createElement("div");
     productTile.className = "product-tile";
+    productTile.setAttribute("data-product-id", product.id);
     productTile.innerHTML = `
             <div class="product-image">
                 <img src="${
@@ -57,6 +58,7 @@ function displayProducts(products) {
                   "https://via.placeholder.com/300x300?text=No+Image"
                 }" 
                      alt="${product.name}" 
+                     class="product-image"
                      onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'" />
                 ${
                   !product.in_stock
@@ -65,15 +67,15 @@ function displayProducts(products) {
                 }
             </div>
             <div class="product-info">
-                <h3>${product.name}</h3>
+                <h3 class="product-name">${product.name}</h3>
                 <p class="product-description">${product.description}</p>
                 <div class="product-meta">
                     <span class="product-category">${
                       product.category || "Без категории"
                     }</span>
-                    <span class="product-price">${formatPrice(
-                      product.price
-                    )} ₽</span>
+                    <span class="product-price">€${product.price.toFixed(
+                      2
+                    )}</span>
                 </div>
                 <div class="product-actions">
                     ${
@@ -113,10 +115,10 @@ function showErrorMessage(message) {
   }
 }
 
-// Добавление товара в корзину (пока заглушка)
+// Добавление товара в корзину
 function addToCart(productId) {
+  // Эта функция определена в cart.js
   console.log("Добавление товара в корзину:", productId);
-  alert("Функция корзины будет реализована позже");
 }
 
 // Инициализация при загрузке страницы

@@ -1,8 +1,8 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f4;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  line-height: 1.6;
+  color: #333;
 }
 
 header {
@@ -16,6 +16,83 @@ nav a {
   color: #ffffff;
   text-decoration: none;
   margin: 0 15px;
+}
+
+/* ===== НОВАЯ НАВИГАЦИЯ ===== */
+.navbar {
+  background: #35424a;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.nav-logo {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 15px 0;
+}
+
+.nav-logo:hover {
+  color: #ffffff;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 30px;
+}
+
+.nav-menu li a {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 15px 10px;
+  display: block;
+  transition: color 0.3s;
+}
+
+.nav-menu li a:hover,
+.nav-menu li a.active {
+  color: #007bff;
+}
+
+.auth-links {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.cart-icon a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cart-count {
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 /* Стили для кнопок авторизации Google */
@@ -65,13 +142,16 @@ main {
 }
 
 footer {
-  text-align: center;
-  padding: 10px 0;
   background: #35424a;
-  color: #ffffff;
-  position: relative;
-  bottom: 0;
-  width: 100%;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 40px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* ===== СТИЛИ ДЛЯ ФОРМЫ ДОБАВЛЕНИЯ ТОВАРА ===== */
@@ -199,39 +279,34 @@ footer {
 }
 
 .btn {
-  padding: 12px 24px;
+  display: inline-block;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
   text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-align: center;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #4285f4, #357ae8);
+  background: #007bff;
   color: white;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #357ae8, #2a5fc7);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+  background: #0056b3;
+  color: white;
 }
 
 .btn-secondary {
-  background: #f8f9fa;
-  color: #35424a;
-  border: 2px solid #e0e0e0;
+  background: #6c757d;
+  color: white;
 }
 
 .btn-secondary:hover {
-  background: #e9ecef;
-  border-color: #adb5bd;
+  background: #545b62;
 }
 
 .success-message,
@@ -497,91 +572,6 @@ footer {
   color: #35424a;
 }
 
-/* ===== СТИЛИ ДЛЯ НАВИГАЦИИ И ПОЛЬЗОВАТЕЛЕЙ ===== */
-header nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.user-greeting {
-  color: #ffffff;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.nav-buttons {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.nav-buttons a,
-.nav-buttons button {
-  color: #ffffff;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-}
-
-.nav-buttons a:hover,
-.nav-buttons button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
-}
-
-/* ===== СТИЛИ ДЛЯ ЗАГРУЗЧИКА ДОСТУПА ===== */
-.access-loader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.loader-content {
-  text-align: center;
-  color: white;
-}
-
-.loader-content i {
-  font-size: 48px;
-  margin-bottom: 20px;
-  animation: pulse 2s infinite;
-}
-
-.loader-content p {
-  font-size: 18px;
-  margin: 0;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
 /* ===== СТИЛИ ДЛЯ АДМИНКИ ===== */
 .admin-user-info {
   display: flex;
@@ -807,6 +797,22 @@ header nav {
 
   .admin-product-list {
     grid-template-columns: 1fr;
+  }
+
+  .nav-container {
+    flex-direction: column;
+    padding: 10px 20px;
+  }
+
+  .nav-menu {
+    margin-top: 10px;
+    gap: 15px;
+  }
+
+  .cart-icon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
   }
 }
 

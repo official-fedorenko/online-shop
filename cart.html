@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Корзина - Интернет Магазин</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      .cart-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .cart-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 30px;
+        margin-top: 20px;
+      }
+
+      .cart-items {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .cart-item {
+        display: grid;
+        grid-template-columns: 80px 1fr auto auto auto;
+        gap: 15px;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .cart-item:last-child {
+        border-bottom: none;
+      }
+
+      .cart-item-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .cart-item-details h4 {
+        margin: 0 0 5px 0;
+        font-size: 16px;
+        color: #333;
+      }
+
+      .cart-item-price {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
+      }
+
+      .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .quantity-btn {
+        width: 30px;
+        height: 30px;
+        border: 1px solid #ddd;
+        background: #f8f9fa;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .quantity-btn:hover {
+        background: #e9ecef;
+      }
+
+      .quantity {
+        min-width: 40px;
+        text-align: center;
+        font-weight: 500;
+      }
+
+      .cart-item-total {
+        font-weight: 600;
+        color: #333;
+        font-size: 16px;
+      }
+
+      .remove-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        background: #dc3545;
+        color: white;
+        cursor: pointer;
+        border-radius: 50%;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .remove-btn:hover {
+        background: #c82333;
+      }
+
+      .cart-summary {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+      }
+
+      .cart-summary h3 {
+        margin: 0 0 20px 0;
+        color: #333;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding: 5px 0;
+      }
+
+      .summary-row.total {
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+        margin-top: 15px;
+        font-weight: 600;
+        font-size: 18px;
+      }
+
+      .minimum-order-warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 15px 0;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .checkout-btn {
+        width: 100%;
+        padding: 15px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+
+      .checkout-btn:hover:not(:disabled) {
+        background: #0056b3;
+      }
+
+      .checkout-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+      }
+
+      .empty-cart {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+      }
+
+      .empty-cart h3 {
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .continue-shopping {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .cart-container {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .cart-item {
+          grid-template-columns: 60px 1fr auto;
+          gap: 10px;
+        }
+
+        .cart-item-controls {
+          grid-column: 1 / -1;
+          justify-content: center;
+          margin-top: 10px;
+        }
+
+        .cart-item-total {
+          grid-column: 1 / -1;
+          text-align: center;
+          margin-top: 5px;
+        }
+
+        .remove-btn {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="nav-container">
+          <a href="/" class="nav-logo">Интернет Магазин</a>
+          <ul class="nav-menu">
+            <li><a href="/">Главная</a></li>
+            <li><a href="/cart" class="active">Корзина</a></li>
+            <li class="auth-links">
+              <a href="/auth" id="authLink">Войти</a>
+              <span id="userInfo" style="display: none">
+                <span id="userName"></span>
+                <a href="#" onclick="logout()">Выйти</a>
+              </span>
+            </li>
+          </ul>
+          <div class="cart-icon">
+            <a href="/cart"> 🛒 <span class="cart-count">0</span> </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="cart-page">
+      <h1>Корзина покупок</h1>
+
+      <div class="cart-container">
+        <div class="cart-items">
+          <!-- Товары корзины будут добавлены динамически -->
+        </div>
+
+        <div class="cart-summary">
+          <h3>Итого</h3>
+          <!-- Сводка заказа будет добавлена динамически -->
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <p>&copy; 2024 Интернет Магазин. Все права защищены.</p>
+      </div>
+    </footer>
+
+    <script src="/js/cart.js"></script>
+    <script src="/js/user-auth.js"></script>
+    <script>
+      // Инициализация страницы корзины
+      document.addEventListener("DOMContentLoaded", function () {
+        // Проверяем авторизацию
+        if (!cart.isUserLoggedIn()) {
+          alert("Для просмотра корзины необходимо войти в систему");
+          window.location.href = "/auth";
+          return;
+        }
+
+        // Отображаем корзину
+        cart.renderCartPage();
+
+        // Обновляем навигацию
+        updateNavigationAuth();
+      });
+
+      // Функция выхода из системы
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("userName");
+        localStorage.removeItem("cart"); // Очищаем корзину при выходе
+        window.location.href = "/";
+      }
+    </script>
+  </body>
+</html>

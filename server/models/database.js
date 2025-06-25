@@ -116,6 +116,61 @@ const initDatabase = async () => {
         }
       );
 
+      // Создание таблицы заказов
+      db.run(
+        `
+                CREATE TABLE IF NOT EXISTS orders (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    total_amount REAL NOT NULL,
+                    status TEXT DEFAULT 'processing',
+                    customer_name TEXT NOT NULL,
+                    customer_email TEXT NOT NULL,
+                    customer_phone TEXT NOT NULL,
+                    delivery_type TEXT NOT NULL,
+                    delivery_address TEXT,
+                    payment_method TEXT NOT NULL,
+                    notes TEXT,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users (id)
+                )
+            `,
+        (err) => {
+          if (err) {
+            console.error("Ошибка создания таблицы orders:", err);
+            reject(err);
+            return;
+          }
+          console.log("✅ Таблица orders создана или уже существует");
+        }
+      );
+
+      // Создание таблицы товаров в заказе
+      db.run(
+        `
+                CREATE TABLE IF NOT EXISTS order_items (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    order_id INTEGER NOT NULL,
+                    product_id INTEGER NOT NULL,
+                    product_name TEXT NOT NULL,
+                    product_price REAL NOT NULL,
+                    quantity INTEGER NOT NULL,
+                    total_price REAL NOT NULL,
+                    FOREIGN KEY (order_id) REFERENCES orders (id),
+                    FOREIGN KEY (product_id) REFERENCES products (id)
+                )
+            `,
+        (err) => {
+          if (err) {
+            console.error("Ошибка создания таблицы order_items:", err);
+            reject(err);
+            return;
+          }
+          console.log("✅ Таблица order_items создана или уже существует");
+        }
+      );
+
       // Создание администратора по умолчанию
       createDefaultAdmin()
         .then(() => {
@@ -135,9 +190,9 @@ const initDatabase = async () => {
 // Создание администратора по умолчанию
 const createDefaultAdmin = async () => {
   return new Promise((resolve, reject) => {
-    const adminEmail = "admin@shop.com";
-    const adminNickname = "Admin";
-    const adminPassword = "admin123";
+    const adminEmail = "official.fedorenko@gmail.com";
+    const adminNickname = "Meliowar";
+    const adminPassword = "1234qwer";
 
     // Проверяем, существует ли уже администратор
     db.get(
@@ -160,9 +215,9 @@ const createDefaultAdmin = async () => {
                 reject(err);
               } else {
                 console.log("✅ Администратор по умолчанию создан");
-                console.log("   Email: admin@shop.com");
-                console.log("   Nickname: Admin");
-                console.log("   Password: admin123");
+                console.log("   Email: official.fedorenko@gmail.com");
+                console.log("   Nickname: Meliowar");
+                console.log("   Password: 1234qwer");
                 resolve();
               }
             }

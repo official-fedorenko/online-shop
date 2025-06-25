@@ -12,27 +12,35 @@
     <script src="js/main.js" defer></script>
     <script src="js/products.js" defer></script>
     <script src="js/user-auth.js" defer></script>
+    <script src="js/cart.js" defer></script>
   </head>
   <body>
     <header>
-      <h1><i class="fas fa-store"></i> Интернет-магазин</h1>
-      <nav>
-        <div id="user-info" style="display: none">
-          <span class="user-greeting">
-            <i class="fas fa-user"></i>
-            Привет, <span id="user-name"></span>!
-          </span>
-        </div>
-        <div class="nav-buttons">
-          <a href="admin/index.html" id="admin-link" style="display: none">
-            <i class="fas fa-cog"></i> Админка
+      <nav class="navbar">
+        <div class="nav-container">
+          <a href="/" class="nav-logo">
+            <i class="fas fa-store"></i> Интернет Магазин
           </a>
-          <a href="auth.html" id="auth-link">
-            <i class="fas fa-sign-in-alt"></i> Войти
-          </a>
-          <button id="logout-button" style="display: none" onclick="logout()">
-            <i class="fas fa-sign-out-alt"></i> Выйти
-          </button>
+          <ul class="nav-menu">
+            <li><a href="/" class="active">Главная</a></li>
+            <li><a href="/cart">Корзина</a></li>
+            <li class="auth-links">
+              <a href="/my-orders" id="ordersLink" style="display: none"
+                >Мои заказы</a
+              >
+              <a href="/auth" id="authLink">Войти</a>
+              <span id="userInfo" style="display: none">
+                <span id="userName"></span>
+                <a href="/admin" id="adminLink" style="display: none"
+                  >Админка</a
+                >
+                <a href="#" onclick="logout()">Выйти</a>
+              </span>
+            </li>
+          </ul>
+          <div class="cart-icon">
+            <a href="/cart"> 🛒 <span class="cart-count">0</span> </a>
+          </div>
         </div>
       </nav>
     </header>
@@ -42,7 +50,9 @@
       </section>
     </main>
     <footer>
-      <p>&copy; 2025 Интернет-магазин</p>
+      <div class="footer-content">
+        <p>&copy; 2024 Интернет Магазин. Все права защищены.</p>
+      </div>
     </footer>
   </body>
 </html>

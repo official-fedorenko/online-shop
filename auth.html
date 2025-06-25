@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Вход в систему - Интернет-магазин</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="auth-page">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1><i class="fas fa-store"></i> Интернет-магазин</h1>
+          <p>Добро пожаловать! Войдите в систему или создайте новый аккаунт</p>
+        </div>
+
+        <!-- Форма входа -->
+        <div id="login-form" class="auth-form active">
+          <h2><i class="fas fa-sign-in-alt"></i> Вход в систему</h2>
+          <form id="loginForm">
+            <div class="form-group">
+              <label for="login-email">
+                <i class="fas fa-envelope"></i>
+                Email
+              </label>
+              <input
+                type="email"
+                id="login-email"
+                name="email"
+                required
+                placeholder="Введите ваш email"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="login-password">
+                <i class="fas fa-lock"></i>
+                Пароль
+              </label>
+              <div class="password-input">
+                <input
+                  type="password"
+                  id="login-password"
+                  name="password"
+                  required
+                  placeholder="Введите пароль"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  onclick="togglePassword('login-password')"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+              <i class="fas fa-sign-in-alt"></i>
+              Войти
+            </button>
+          </form>
+
+          <div class="auth-switch">
+            <p>
+              Нет аккаунта?
+              <a href="#" onclick="switchToRegister()">Зарегистрироваться</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Форма регистрации -->
+        <div id="register-form" class="auth-form">
+          <h2><i class="fas fa-user-plus"></i> Регистрация</h2>
+          <form id="registerForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="register-firstname">
+                  <i class="fas fa-user"></i>
+                  Имя
+                </label>
+                <input
+                  type="text"
+                  id="register-firstname"
+                  name="firstname"
+                  required
+                  placeholder="Ваше имя"
+                />
+              </div>
+              <div class="form-group">
+                <label for="register-lastname">
+                  <i class="fas fa-user"></i>
+                  Фамилия
+                </label>
+                <input
+                  type="text"
+                  id="register-lastname"
+                  name="lastname"
+                  required
+                  placeholder="Ваша фамилия"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="register-email">
+                <i class="fas fa-envelope"></i>
+                Email
+              </label>
+              <input
+                type="email"
+                id="register-email"
+                name="email"
+                required
+                placeholder="Введите email"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="register-password">
+                <i class="fas fa-lock"></i>
+                Пароль
+              </label>
+              <div class="password-input">
+                <input
+                  type="password"
+                  id="register-password"
+                  name="password"
+                  required
+                  placeholder="Придумайте пароль"
+                  minlength="6"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  onclick="togglePassword('register-password')"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <div class="form-hint">Минимум 6 символов</div>
+            </div>
+
+            <div class="form-group">
+              <label for="register-confirm-password">
+                <i class="fas fa-lock"></i>
+                Подтвердите пароль
+              </label>
+              <div class="password-input">
+                <input
+                  type="password"
+                  id="register-confirm-password"
+                  name="confirmPassword"
+                  required
+                  placeholder="Повторите пароль"
+                />
+                <button
+                  type="button"
+                  class="password-toggle"
+                  onclick="togglePassword('register-confirm-password')"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="register-role" name="isAdmin" />
+                <span class="checkmark"></span>
+                Я администратор (для демонстрации)
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+              <i class="fas fa-user-plus"></i>
+              Зарегистрироваться
+            </button>
+          </form>
+
+          <div class="auth-switch">
+            <p>
+              Уже есть аккаунт?
+              <a href="#" onclick="switchToLogin()">Войти</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Сообщения -->
+        <div id="auth-message" class="auth-message" style="display: none">
+          <i class="fas fa-info-circle"></i>
+          <span id="auth-message-text"></span>
+        </div>
+      </div>
+
+      <!-- Демо аккаунты -->
+      <div class="demo-accounts">
+        <h3>
+          <i class="fas fa-info-circle"></i> Демо аккаунты для тестирования:
+        </h3>
+        <div class="demo-account" onclick="fillDemoAccount('admin')">
+          <strong>Администратор:</strong> admin@shop.com / admin123
+        </div>
+        <div class="demo-account" onclick="fillDemoAccount('user')">
+          <strong>Пользователь:</strong> user@shop.com / user123
+        </div>
+      </div>
+    </div>
+
+    <script src="js/user-auth.js"></script>
+  </body>
+</html>

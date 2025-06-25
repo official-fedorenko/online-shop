@@ -1,21 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Интернет-магазин</title>
     <link rel="stylesheet" href="css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <script src="js/main.js" defer></script>
-    <script src="js/auth.js" defer></script>
     <script src="js/products.js" defer></script>
-    <script src="js/admin.js" defer></script>
+    <script src="js/user-auth.js" defer></script>
   </head>
   <body>
     <header>
-      <h1>Добро пожаловать в интернет-магазин</h1>
+      <h1><i class="fas fa-store"></i> Интернет-магазин</h1>
       <nav>
-        <a href="/admin/index.html">Админка</a>
-        <a href="/login">Войти через Google</a>
+        <div id="user-info" style="display: none">
+          <span class="user-greeting">
+            <i class="fas fa-user"></i>
+            Привет, <span id="user-name"></span>!
+          </span>
+        </div>
+        <div class="nav-buttons">
+          <a href="admin/index.html" id="admin-link" style="display: none">
+            <i class="fas fa-cog"></i> Админка
+          </a>
+          <a href="auth.html" id="auth-link">
+            <i class="fas fa-sign-in-alt"></i> Войти
+          </a>
+          <button id="logout-button" style="display: none" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Выйти
+          </button>
+        </div>
       </nav>
     </header>
     <main>
@@ -24,7 +42,7 @@
       </section>
     </main>
     <footer>
-      <p>&copy; 2023 Интернет-магазин</p>
+      <p>&copy; 2025 Интернет-магазин</p>
     </footer>
   </body>
 </html>
